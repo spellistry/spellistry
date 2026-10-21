@@ -1,2 +1,2 @@
 # spellistry
-chemistry game
+chemistry game!
