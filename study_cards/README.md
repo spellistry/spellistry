@@ -12,7 +12,10 @@ python study_cards.py
 ```
 
 Choose **Add** to create a card, **List** to review the deck, **Delete** to
-remove a card, or **Quit** to exit. The default deck file is
+remove a card, **Study** to practice recall in shuffled order, or **Quit** to
+exit. During a study session, try to recall the answer before revealing it,
+then mark whether you knew it or want to review it again. The session ends with
+a recap of cards to revisit. The default deck file is
 `study_cards.json` in the current directory. To use a different file:
 
 ```bash
