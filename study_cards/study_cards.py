@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -101,6 +102,44 @@ def delete_card(cards: list[Card], store: CardStore) -> None:
     print(f"Deleted “{removed.term}”.")
 
 
+def study_deck(cards: list[Card]) -> None:
+    if not cards:
+        print("Your deck is empty. Add a card before starting a study session.")
+        return
+
+    session = cards.copy()
+    random.shuffle(session)
+    known = 0
+    review: list[Card] = []
+    studied = 0
+
+    print("\nStudy session — try to recall each answer before revealing it.")
+    for number, card in enumerate(session, start=1):
+        print(f"\nCard {number} of {len(session)}: {card.term}")
+        action = input("Press Enter to reveal, or Q to stop: ").strip().lower()
+        if action in {"q", "quit"}:
+            break
+
+        print(f"Answer: {card.definition}")
+        while True:
+            rating = input("[K]new it or [R]eview again? ").strip().lower()
+            if rating in {"k", "knew", "r", "review"}:
+                break
+            print("Choose K if you knew it, or R to review it again.")
+
+        studied += 1
+        if rating in {"k", "knew"}:
+            known += 1
+        else:
+            review.append(card)
+
+    print(f"\nSession complete: {known} knew, {len(review)} to review, {studied} studied.")
+    if review:
+        print("Review these cards:")
+        for card in review:
+            print(f"- {card.term} — {card.definition}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Make a local study-card deck.")
     parser.add_argument(
@@ -120,7 +159,7 @@ def main() -> int:
 
     while True:
         print("\nStudy Cards")
-        print("[A]dd  [L]ist  [D]elete  [Q]uit")
+        print("[A]dd  [L]ist  [D]elete  [S]tudy  [Q]uit")
         choice = input("> ").strip().lower()
 
         try:
@@ -130,11 +169,13 @@ def main() -> int:
                 list_cards(cards)
             elif choice in {"d", "delete"}:
                 delete_card(cards, store)
+            elif choice in {"s", "study"}:
+                study_deck(cards)
             elif choice in {"q", "quit"}:
                 print("Deck saved. Happy studying!")
                 return 0
             else:
-                print("Choose Add, List, Delete, or Quit.")
+                print("Choose Add, List, Delete, Study, or Quit.")
         except OSError as error:
             print(f"Could not save deck: {error}")
 
